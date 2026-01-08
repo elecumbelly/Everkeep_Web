@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#e7d6c1" />
+  <title>EverKeep</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;600;700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="icons/icon-192.svg" type="image/svg+xml" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="app" id="app">
+    <header class="top-bar">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">EK</div>
+        <div>
+          <p class="brand-title">EverKeep</p>
+          <p class="brand-tagline">Keep what matters, always.</p>
+        </div>
+      </div>
+      <div class="status">
+        <span class="status-pill" id="storage-status">Saved on this device</span>
+        <span class="status-note" id="connection-status">Online</span>
+      </div>
+    </header>
+
+    <main class="main" id="main">
+      <section class="tab-panel is-active" id="tab-today-panel" aria-labelledby="tab-today" data-tab="today">
+        <div class="panel-head">
+          <h1>Today</h1>
+          <button type="button" class="ghost-button" data-action="open-backfill">Add past moment</button>
+        </div>
+        <div class="prompt-card" id="today-prompt-card">
+          <div>
+            <p class="prompt-label">One moment a day</p>
+            <p class="prompt-text" id="today-prompt">A small moment you want to keep.</p>
+          </div>
+          <div class="prompt-actions">
+            <button type="button" class="ghost-button" data-action="swap-prompt">New prompt</button>
+            <button type="button" class="ghost-button" data-action="open-onboarding">Why EverKeep?</button>
+          </div>
+        </div>
+        <div class="action-grid">
+          <button type="button" class="primary-card" data-action="open-add" data-mode="write">
+            <span>Write</span>
+            <small>Quiet, one line or more</small>
+          </button>
+          <button type="button" class="primary-card" data-action="open-add" data-mode="record">
+            <span>Record</span>
+            <small>Voice note with warmth</small>
+          </button>
+          <button type="button" class="primary-card" data-action="open-add" data-mode="photo">
+            <span>Photo</span>
+            <small>Snap or choose an image</small>
+          </button>
+        </div>
+        <div class="panel-sub">
+          <h2>Recent keeps</h2>
+          <div class="stack" id="today-recent" aria-live="polite" aria-atomic="true"></div>
+        </div>
+      </section>
+
+      <section class="tab-panel" id="tab-library-panel" aria-labelledby="tab-library" data-tab="library">
+        <div class="panel-head">
+          <h1>Library</h1>
+          <div class="view-switch" id="library-views"></div>
+        </div>
+        <div class="search-row">
+          <input type="search" id="library-search" placeholder="Search memories" aria-label="Search memories" />
+          <button type="button" class="ghost-button" data-action="clear-search">Clear</button>
+        </div>
+        <div class="filter-row" id="library-filters"></div>
+        <div class="stack" id="library-list" aria-live="polite" aria-atomic="true"></div>
+      </section>
+
+      <section class="tab-panel" id="tab-people-panel" aria-labelledby="tab-people" data-tab="people">
+        <div class="panel-head">
+          <h1>People</h1>
+          <button type="button" class="ghost-button" data-action="open-person">Add person</button>
+        </div>
+        <p class="panel-note">Keep the people who matter close, without pressure.</p>
+        <div class="stack" id="people-list" aria-live="polite" aria-atomic="true"></div>
+      </section>
+
+      <section class="tab-panel" id="tab-places-panel" aria-labelledby="tab-places" data-tab="places">
+        <div class="panel-head">
+          <h1>Places</h1>
+          <span class="pill">Map view is optional</span>
+        </div>
+        <p class="panel-note">Places stay lightweight. Add a name now, details later.</p>
+        <div class="stack" id="places-list" aria-live="polite" aria-atomic="true"></div>
+      </section>
+
+      <section class="tab-panel" id="tab-me-panel" aria-labelledby="tab-me" data-tab="me">
+        <div class="panel-head">
+          <h1>Me</h1>
+          <span class="pill">Private by default</span>
+        </div>
+        <div class="panel-sub">
+          <h2>Sections</h2>
+          <div class="stack" id="sections-list"></div>
+          <button type="button" class="ghost-button" data-action="open-section">Create section</button>
+        </div>
+        <div class="panel-sub">
+          <h2>Settings</h2>
+          <div class="stack" id="settings-list"></div>
+        </div>
+        <div class="panel-sub">
+          <h2>Export</h2>
+          <div class="stack">
+            <button type="button" class="primary-card" data-action="export-all">
+              <span>Download your memories</span>
+              <small>JSON bundle from this device</small>
+            </button>
+            <p class="panel-note">Exports are always available. Nothing is shared unless you choose.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <nav class="bottom-nav" role="navigation" aria-label="Primary">
+      <button type="button" class="nav-item is-active" id="tab-today" data-tab-target="today" aria-selected="true">
+        <span>Today</span>
+      </button>
+      <button type="button" class="nav-item" id="tab-library" data-tab-target="library" aria-selected="false">
+        <span>Library</span>
+      </button>
+      <button type="button" class="nav-item" id="tab-people" data-tab-target="people" aria-selected="false">
+        <span>People</span>
+      </button>
+      <button type="button" class="nav-item" id="tab-places" data-tab-target="places" aria-selected="false">
+        <span>Places</span>
+      </button>
+      <button type="button" class="nav-item" id="tab-me" data-tab-target="me" aria-selected="false">
+        <span>Me</span>
+      </button>
+    </nav>
+  </div>
+
+  <div class="overlay" id="onboarding" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="onboarding-title">
+      <div class="modal-head">
+        <h2 id="onboarding-title">Welcome to EverKeep</h2>
+        <button type="button" class="icon-button" data-action="close-onboarding" aria-label="Close">x</button>
+      </div>
+      <div class="modal-body" id="onboarding-body"></div>
+      <div class="modal-actions" id="onboarding-actions"></div>
+    </div>
+  </div>
+
+  <div class="overlay" id="memory-modal" aria-hidden="true">
+    <div class="modal wide" role="dialog" aria-modal="true" aria-labelledby="memory-title">
+      <div class="modal-head">
+        <h2 id="memory-title">Add a memory</h2>
+        <button type="button" class="icon-button" data-action="close-memory" aria-label="Close">x</button>
+      </div>
+      <form class="modal-body" id="memory-form">
+        <input type="hidden" name="memoryId" id="memory-id" />
+        <div class="field-row">
+          <label class="field">
+            <span>Visibility</span>
+            <select name="visibility" id="memory-visibility">
+              <option value="Private">Private</option>
+              <option value="Family">Shared with family</option>
+              <option value="Selected">Selected people</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Section</span>
+            <select name="section" id="memory-section"></select>
+          </label>
+        </div>
+        <div class="field">
+          <label>
+            <span>Title</span>
+            <input type="text" name="title" id="memory-title-input" placeholder="Optional" />
+          </label>
+        </div>
+        <div class="field">
+          <label>
+            <span>Story</span>
+            <textarea name="body" id="memory-body" rows="4" placeholder="One line is enough"></textarea>
+          </label>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="low-energy" />
+          <span>Low energy mode</span>
+        </label>
+        <div class="field" id="low-energy-field" hidden>
+          <label>
+            <span>One line</span>
+            <input type="text" id="low-energy-line" placeholder="The smallest version" />
+          </label>
+        </div>
+        <div class="field-row">
+          <label class="field">
+            <span>Date type</span>
+            <select id="date-type">
+              <option value="exact">Exact date</option>
+              <option value="month">Month only</option>
+              <option value="season">Season</option>
+              <option value="unknown">I am not sure</option>
+            </select>
+          </label>
+          <label class="field" id="date-exact">
+            <span>Date</span>
+            <input type="date" id="date-value" />
+          </label>
+          <label class="field" id="date-month" hidden>
+            <span>Month</span>
+            <input type="month" id="date-month-value" />
+          </label>
+          <label class="field" id="date-season" hidden>
+            <span>Season</span>
+            <select id="date-season-value">
+              <option value="spring">Spring</option>
+              <option value="summer">Summer</option>
+              <option value="autumn">Autumn</option>
+              <option value="winter">Winter</option>
+            </select>
+          </label>
+          <label class="field" id="date-year" hidden>
+            <span>Year</span>
+            <input type="number" id="date-year-value" min="1900" max="2100" />
+          </label>
+        </div>
+        <p class="panel-note">It is always okay to leave the date fuzzy or unknown.</p>
+
+        <div class="field" id="media-field">
+          <span>Media</span>
+          <div class="media-actions">
+            <label class="ghost-button">
+              <input type="file" accept="image/*" id="photo-input" hidden />
+              Add photo
+            </label>
+            <button type="button" class="ghost-button" data-action="start-record">Record audio</button>
+            <button type="button" class="ghost-button" data-action="stop-record" disabled>Stop recording</button>
+          </div>
+          <div class="media-status" id="media-status" hidden>
+            <span class="spinner" aria-hidden="true"></span>
+            Saving media...
+          </div>
+          <div class="recording-indicator" id="recording-indicator" hidden>
+            <span class="pulse-dot" aria-hidden="true"></span>
+            Recording...
+          </div>
+          <div class="media-preview" id="media-preview"></div>
+        </div>
+
+        <button type="button" class="ghost-button" data-action="toggle-advanced">More options</button>
+
+        <div class="advanced" id="advanced-fields" hidden>
+          <div class="field-row">
+            <label class="field">
+              <span>People</span>
+              <div class="chip-grid" id="people-options"></div>
+              <button type="button" class="ghost-button" data-action="open-person">Add person</button>
+            </label>
+            <label class="field">
+              <span>Place</span>
+              <input type="text" id="memory-place" placeholder="Optional" />
+            </label>
+          </div>
+          <label class="field">
+            <span>Tags</span>
+            <input type="text" id="memory-tags" placeholder="Comma separated" />
+          </label>
+          <div class="field" id="selected-people-field" hidden>
+            <span>Share with</span>
+            <div class="chip-grid" id="selected-people-options"></div>
+            <p class="panel-note">Nothing is shared unless you choose.</p>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <div class="left-actions">
+            <button type="button" class="ghost-button" data-action="restore-draft" id="restore-draft" hidden>Restore last draft</button>
+          </div>
+          <div class="right-actions">
+            <button type="button" class="ghost-button" data-action="close-memory">Cancel</button>
+            <button type="submit" class="primary-button" data-action="save-memory">Save memory</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="overlay" id="detail-modal" aria-hidden="true">
+    <div class="modal wide" role="dialog" aria-modal="true" aria-labelledby="detail-title">
+      <div class="modal-head">
+        <h2 id="detail-title">Memory</h2>
+        <button type="button" class="icon-button" data-action="close-detail" aria-label="Close">x</button>
+      </div>
+      <div class="modal-body" id="detail-body"></div>
+      <div class="modal-actions" id="detail-actions"></div>
+    </div>
+  </div>
+
+  <div class="overlay" id="confirm-modal" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+      <div class="modal-head">
+        <h2 id="confirm-title">Are you sure?</h2>
+        <button type="button" class="icon-button" data-action="close-confirm" aria-label="Close">x</button>
+      </div>
+      <div class="modal-body">
+        <p id="confirm-body" class="panel-note"></p>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="ghost-button" data-action="cancel-confirm">Cancel</button>
+        <button type="button" class="primary-button" data-action="confirm-action">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toast-container" role="status" aria-live="polite" aria-atomic="true"></div>
+
+  <div class="overlay" id="person-modal" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="person-title">
+      <div class="modal-head">
+        <h2 id="person-title">Add a person</h2>
+        <button type="button" class="icon-button" data-action="close-person" aria-label="Close">x</button>
+      </div>
+      <form class="modal-body" id="person-form">
+        <label class="field">
+          <span>Name</span>
+          <input type="text" id="person-name" required />
+        </label>
+        <label class="field">
+          <span>Note</span>
+          <input type="text" id="person-note" placeholder="Optional" />
+        </label>
+        <div class="modal-actions">
+          <button type="button" class="ghost-button" data-action="close-person">Cancel</button>
+          <button type="submit" class="primary-button">Save person</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="overlay" id="section-modal" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="section-title">
+      <div class="modal-head">
+        <h2 id="section-title">Create a section</h2>
+        <button type="button" class="icon-button" data-action="close-section" aria-label="Close">x</button>
+      </div>
+      <form class="modal-body" id="section-form">
+        <label class="field">
+          <span>Name</span>
+          <input type="text" id="section-name" required />
+        </label>
+        <label class="field">
+          <span>Default visibility</span>
+          <select id="section-visibility">
+            <option value="Private">Private</option>
+            <option value="Family">Shared with family</option>
+            <option value="Selected">Selected people</option>
+          </select>
+        </label>
+        <div class="modal-actions">
+          <button type="button" class="ghost-button" data-action="close-section">Cancel</button>
+          <button type="submit" class="primary-button">Save section</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
